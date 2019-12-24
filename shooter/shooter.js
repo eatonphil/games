@@ -1,14 +1,10 @@
 'use strict';
 
-const X = 1;
-const _ = 0;
-
 class Sprite {
-  constructor(pixels, fillStyle = 'blue') {
-    this.pixels = pixels.reduce((all, row, y) =>
-      [...all, ...row.map((value, x) => value === X ? { x, y, fillStyle } : undefined).filter(Boolean)], [])
+  constructor(pixels) {
     this.offset = { x: 0, y: 0 };
-    this.speed = 1;
+    this.slowdown = 1;
+    this.pixels = pixels;
   }
 
   getBoundary(cmp) {
@@ -50,13 +46,25 @@ class Sprite {
 class AlienSprite extends Sprite {
   constructor() {
     super([
-      [_, _, X, _, _],
-      [X, X, X, X, X],
-      [_, X, X, X, _],
-    ], 'green');
+      { x: 1, y: 0, fillStyle: 'red' },
+      { x: 2, y: 0, fillStyle: 'red' },
+      { x: 3, y: 0, fillStyle: 'red' },
+
+      { x: 0, y: 1, fillStyle: 'black' },
+      { x: 1, y: 1, fillStyle: 'black' },
+      { x: 2, y: 1, fillStyle: 'black' },
+      { x: 3, y: 1, fillStyle: 'black' },
+      { x: 4, y: 1, fillStyle: 'black' },
+
+      { x: 1, y: 2, fillStyle: 'black' },
+      { x: 2, y: 2, fillStyle: 'black' },
+      { x: 3, y: 2, fillStyle: 'black' },
+
+      { x: 2, y: 3, fillStyle: 'red' },
+    ]);
   }
 
-  calc(intersections) {
+  calc(intersections, counter) {
     for (let i = 0; i < intersections.length; i++) {
       const sprite = intersections[i];
       if (sprite instanceof BulletSprite) {
@@ -68,19 +76,20 @@ class AlienSprite extends Sprite {
       }
     }
 
-    if (Math.random() > .5) {
-      this.offset.y += this.speed * (Math.random() - 0.5 > 0 ? 1 : -1);
+    if (counter % this.slowdown === 0) {
+      this.offset.y += 1 * (Math.random() - 0.5 > 0 ? 1 : -1);
+      this.offset.x--;
     }
-    this.offset.x -= this.speed;
   }
 }
 
 class BulletSprite extends Sprite {
   constructor() {
-    super([[X]], 'red');
+    super([{ x: 0, y: 0, fillStyle: '#ff33de' }]);
+    this.slowdown = 1;
   }
 
-  calc(intersections) {
+  calc(intersections, counter) {
     for (let i = 0; i < intersections.length; i++) {
       const sprite = intersections[i];
       if (sprite instanceof AlienSprite) {
@@ -88,26 +97,134 @@ class BulletSprite extends Sprite {
       }
     }
 
-    this.offset.x += this.speed;
+    if (counter % this.slowdown === 0) {
+      this.offset.x++;
+    }
   }
 }
 
 class ManSprite extends Sprite {
   constructor() {
     super([
-      [_, _, X, _, _, _],
-      [_, X, X, X, _, _],
-      [_, _, X, _, _, _],
-      [X, X, X, X, _, _],
-      [_, X, X, X, X, X],
-      [_, _, X, _, _, _],
-      [_, X, _, X, _, _],
-      [_, X, _, X, _, _],
+      { x: 2, y: 0, fillStyle: 'black' },
+      { x: 4, y: 0, fillStyle: 'black' },
+      { x: 3, y: 0, fillStyle: 'black' },
+
+      { x: 2, y: 1, fillStyle: '#00807a' },
+      { x: 3, y: 1, fillStyle: 'white' },
+      { x: 4, y: 1, fillStyle: '#00807a' },
+
+      { x: 2, y: 2, fillStyle: 'white' },
+      { x: 3, y: 2, fillStyle: 'white' },
+      { x: 4, y: 2, fillStyle: 'white' },
+
+      { x: 3, y: 3, fillStyle: 'white' },
+
+      { x: 1, y: 4, fillStyle: 'black' },
+      { x: 2, y: 4, fillStyle: '#4600bd' },
+      { x: 3, y: 4, fillStyle: 'black' },
+      { x: 4, y: 4, fillStyle: 'black' },
+      { x: 5, y: 4, fillStyle: 'black' },
+
+      { x: 0, y: 5, fillStyle: '#4600bd' },
+      { x: 1, y: 5, fillStyle: 'black' },
+      { x: 2, y: 5, fillStyle: '#4600bd' },
+      { x: 3, y: 5, fillStyle: '#4600bd' },
+      { x: 4, y: 5, fillStyle: '#4600bd' },
+      { x: 5, y: 5, fillStyle: '#4600bd' },
+      { x: 6, y: 5, fillStyle: '#4600bd' },
+      { x: 7, y: 5, fillStyle: '#4600bd' },
+
+      { x: 1, y: 6, fillStyle: 'white' },
+      { x: 2, y: 6, fillStyle: 'white' },
+      { x: 3, y: 6, fillStyle: '#4600bd' },
+      { x: 4, y: 6, fillStyle: 'black' },
+      { x: 5, y: 6, fillStyle: 'white' },
+
+      { x: 2, y: 7, fillStyle: '#4600bd' },
+      { x: 3, y: 7, fillStyle: 'black' },
+      { x: 4, y: 7, fillStyle: 'black' },
+
+      { x: 2, y: 8, fillStyle: 'black' },
+      { x: 4, y: 8, fillStyle: 'black' },
+
+      { x: 2, y: 9, fillStyle: 'black' },
+      { x: 4, y: 9, fillStyle: 'black' },
+
+      { x: 2, y: 10, fillStyle: 'black' },
+      { x: 4, y: 10, fillStyle: 'black' },
+
+
+      { x: 2, y: 12, fillStyle: 'red' },
+      { x: 4, y: 12, fillStyle: 'red' },
+
+      { x: 2, y: 13, fillStyle: 'red' },
+      { x: 4, y: 13, fillStyle: 'red' },
     ]);
 
-    this.speed = 2;
+    this.slowdown = 1;
   }
 }
+
+class GameState {
+  constructor() {
+    this.aliens = 0;
+    this.escaped = 0;
+    this.remaining = 20;
+    this.level = 1;
+    this.running = true;
+  }
+
+  calc(game, counter) {
+    const newSprites = game.sprites.map((sprite, i) => {
+      const intersections = game.getIntersections(sprite);
+      const action = sprite.calc(intersections, counter);
+      switch (action) {
+	case 'gameover':
+	  this.running = false;
+	  return null;
+	case 'delete':
+	  if (sprite instanceof AlienSprite) {
+	    this.aliens++;
+	  }
+
+	  return null;
+	default:
+	  if (sprite instanceof AlienSprite) {
+	    if (sprite.offset.x * game.pixelWidth < 0) {
+	      this.escaped++;
+	      return null;
+	    }
+	  }
+
+	  if (sprite instanceof BulletSprite) {
+	    if (sprite.offset.x * game.pixelWidth > game.width) {
+	      return null;
+	    }
+	  }
+	  return sprite;
+      }
+    }).filter(Boolean);
+
+    // Reset it afterward so all calculations take place on sprites
+    // as they were at the start of calculating.
+    game.sprites = newSprites;
+
+    // Add a new alien every so often
+    if (this.remaining && Math.random() > .97) {
+      const alien = new AlienSprite();
+      alien.offset.x = (game.width / game.pixelWidth) - 10;
+      alien.offset.y = Math.floor(Math.random() * (game.height / game.pixelHeight));
+      alien.slowdown = this.level * 100;
+      game.sprites.push(alien);
+      this.remaining--;
+    } else if (this.aliens + this.escaped === this.level * 20) {
+      this.level++;
+      this.remaining = this.level * 20;
+    }
+  }
+}
+
 
 class FixedQueue {
   constructor(n) {
@@ -129,17 +246,19 @@ class FixedQueue {
 }
 
 class Game {
-  constructor(width, height, controlledSprite) {
-    this.running = true;
-    this.frequency = 100; // ms
-    this.pixelHeight = 10;
-    this.pixelWidth = 10;
+  constructor(width, height, controlledSprite, gameState, renderExtra) {
+    this.frequency = 1; // ms
+    this.pixelHeight = 5;
+    this.pixelWidth = 5;
     this.sprites = [controlledSprite];
     this.keyEvents = new FixedQueue(10);
-    this.controlledSprite = controlledSprite;
+    this.count = 0;
 
     this.width = width;
     this.height = height;
+    this.controlledSprite = controlledSprite;
+    this.gameState = gameState;
+    this.renderExtra = renderExtra;
   }
 
   init() {
@@ -155,7 +274,7 @@ class Game {
   }
 
   reset() {
-    this.canvasContext.fillStyle = 'black';
+    this.canvasContext.fillStyle = '#ddddee';
     this.canvasContext.fillRect(0, 0, this.width, this.height);
   }
 
@@ -167,21 +286,21 @@ class Game {
 
     switch (e.code) {
       case 'ArrowRight':
-	this.controlledSprite.offset.x += this.controlledSprite.speed;
+	this.controlledSprite.offset.x += 5;
 	break;
       case 'ArrowLeft':
-	this.controlledSprite.offset.x -= this.controlledSprite.speed;
+	this.controlledSprite.offset.x -= 5;
 	break;
       case 'ArrowDown':
-	this.controlledSprite.offset.y += this.controlledSprite.speed;
+	this.controlledSprite.offset.y += 5;
 	break;
       case 'ArrowUp':
-	this.controlledSprite.offset.y -= this.controlledSprite.speed;
+	this.controlledSprite.offset.y -= 5;
 	break;
       case 'Space':
 	const bullet = new BulletSprite();
 	const rightBoundary = this.controlledSprite.getRightBoundary();
-	bullet.offset.x = rightBoundary.x + this.controlledSprite.offset.x + this.controlledSprite.speed;
+	bullet.offset.x = rightBoundary.x + this.controlledSprite.offset.x + 1;
 	bullet.offset.y = rightBoundary.y + this.controlledSprite.offset.y;
 	this.sprites.push(bullet);
 	break;
@@ -223,34 +342,6 @@ class Game {
     }).filter(Boolean);
   }
 
-  calc() {
-    const newSprites = this.sprites.map((sprite, i) => {
-      const intersections = this.getIntersections(sprite);
-      const action = sprite.calc(intersections);
-      switch (action) {
-	case 'gameover':
-	  this.running = false;
-	  return null;
-	case 'delete':
-	  return null;
-	default:
-	  return sprite;
-      }
-    }).filter(Boolean);
-
-    // Reset it afterward so all calculations take place on sprites
-    // as they were at the start of calculating.
-    this.sprites = newSprites;
-
-    // Add a new alien every so often
-    if (Math.random() > .96) {
-      const alien = new AlienSprite();
-      alien.offset.x = (this.width / this.pixelWidth) - 10;
-      alien.offset.y = Math.floor(Math.random() * (this.height / this.pixelHeight));
-      this.sprites.push(alien);
-    }
-  }
-
   render() {
     this.reset();
 
@@ -262,22 +353,47 @@ class Game {
 	this.canvasContext.fillRect(x * this.pixelWidth, y * this.pixelHeight, this.pixelWidth, this.pixelHeight);
       });
     });
+
+    this.renderExtra.call(this);
   }
 
   loop() {
-    if (!this.running) {
+    if (!this.gameState.running) {
       return;
     }
 
     this.input();
-    this.calc();
+    this.gameState.calc(this, this.count++);
     this.render();
     setTimeout(() => this.loop(), this.frequency);
   }
 }
 
+function renderScore() {
+  const width = 850;
+  const height = 50;
+
+  this.canvasContext.fillStyle = 'black';
+  this.canvasContext.fillRect(this.width / 2 - width / 2, 0, width, height);
+
+  this.canvasContext.fillStyle = 'white';
+  this.canvasContext.font = '16px Arial';
+  this.canvasContext.fillText('Level: ' + this.gameState.level, this.width / 2 - width / 2 + 100, height / 2 + 5);
+  this.canvasContext.fillText('Killed: ' + this.gameState.aliens, this.width / 2 - width / 2 + 250, height / 2 + 5);
+  this.canvasContext.fillText('Escaped: ' + this.gameState.escaped, this.width / 2 - width / 2 + 400, height / 2 + 5);
+  this.canvasContext.fillText('Remaining: ' + this.gameState.remaining, this.width / 2 - width / 2 + 550, height / 2 + 5);
+  this.canvasContext.fillText('Score: ' + (this.gameState.aliens - this.gameState.escaped), this.width / 2 - width / 2 + 700, height / 2 + 5);
+}
+
 function init() {
-  const game = new Game(800, 600, new ManSprite());
+  document.body.style.margin = '0';
+  const gameState = new GameState();
+  const game = new Game(
+    document.body.offsetWidth,
+    document.body.offsetHeight,
+    new ManSprite(),
+    gameState,
+    renderScore);
   game.init();
   game.loop();
 }
